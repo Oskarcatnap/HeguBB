@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ball Fighter</title>
+    <title>Ball figher</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- Valuutat ja Kauppanappi -->
+            <!-- Valuutat ja Kauppanappi (AINOA VERSIO) -->
             <div class="flex items-center gap-4">
                 <!-- Aseenvaihto painikkeet/näytin -->
                 <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-700">
@@ -139,12 +139,19 @@
             </div>
 
             <!-- Kauppa Modal Overlay -->
-            <div id="shop-modal" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col z-30 p-4 sm:p-6">
-                <div class="flex justify-between items-center border-b border-amber-500/30 pb-4 mb-4">
+            <div id="shop-modal" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col z-30 p-4 sm:p-6">
+                <div class="flex flex-wrap justify-between items-center border-b border-amber-500/30 pb-3 mb-3 gap-2">
                     <div>
-                        <h2 class="font-cinzel text-2xl font-bold text-amber-400">Varustekauppa & Päivitykset</h2>
-                        <p class="text-xs text-slate-400">Päivitä sankarisi voimia kohdataksesi vahvempia hirviöitä.</p>
+                        <h2 class="font-cinzel text-2xl font-bold text-amber-400">Varustekauppa (Max Lvl 50)</h2>
+                        <p class="text-xs text-slate-400">Päivitä sankarisi voimia. Enimmäistaso jokaiselle päivitykselle on 50.</p>
                     </div>
+                    
+                    <!-- Koodikenttä -->
+                    <div class="flex items-center gap-2 bg-slate-900 p-1.5 rounded-lg border border-slate-700">
+                        <input type="text" id="cheat-code-input" placeholder="Syötä koodi..." class="bg-slate-950 text-xs px-2.5 py-1.5 rounded border border-slate-800 text-slate-200 outline-none focus:border-amber-500 w-48">
+                        <button id="btn-apply-cheat" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded transition">Käytä</button>
+                    </div>
+
                     <button id="btn-close-shop" class="text-slate-400 hover:text-white text-2xl font-bold px-3 py-1 rounded-lg hover:bg-slate-800">
                         &times;
                     </button>
@@ -157,12 +164,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Miekan Vahinko</h3>
-                                <span id="shop-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Kasvattaa miekan lähitaisteluvahinkoa.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-dmg-cost" class="font-bold text-amber-400 font-mono">80 Kultaa</span>
+                            <span id="shop-dmg-cost" class="font-bold text-amber-400 font-mono">30 Kultaa</span>
                             <button id="btn-buy-dmg" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -172,12 +179,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Pyssyn Vahinko</h3>
-                                <span id="shop-gun-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-gun-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Kasvattaa ammusten vahinkoa etäisyydelle.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-gun-dmg-cost" class="font-bold text-amber-400 font-mono">100 Kultaa</span>
+                            <span id="shop-gun-dmg-cost" class="font-bold text-amber-400 font-mono">40 Kultaa</span>
                             <button id="btn-buy-gun-dmg" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -187,12 +194,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Pyssyn Tulinopeus</h3>
-                                <span id="shop-gun-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-gun-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Nopeuttaa luotien ampumista peräkkäin.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-gun-speed-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <span id="shop-gun-speed-cost" class="font-bold text-amber-400 font-mono">45 Kultaa</span>
                             <button id="btn-buy-gun-speed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -202,12 +209,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Miekan Nopeus</h3>
-                                <span id="shop-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Lyhennä miekan sivallusten välistä aikaa.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-speed-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <span id="shop-speed-cost" class="font-bold text-amber-400 font-mono">45 Kultaa</span>
                             <button id="btn-buy-speed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -217,12 +224,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Haarniska & HP</h3>
-                                <span id="shop-hp-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-hp-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
-                            <p class="text-xs text-slate-400 mb-4">Nostaa maksimielämäpisteitäsi (Max HP) ja parantaa hahmosi kestävyyttä.</p>
+                            <p class="text-xs text-slate-400 mb-4">Nostaa maksimielämäpisteitäsi (Max HP).</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-hp-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <span id="shop-hp-cost" class="font-bold text-amber-400 font-mono">40 Kultaa</span>
                             <button id="btn-buy-hp" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -232,12 +239,12 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Liikenopeus</h3>
-                                <span id="shop-move-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                                <span id="shop-move-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Nostaa liikkumisnopeutta auttaen väistelemään hirviöitä.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-move-cost" class="font-bold text-amber-400 font-mono">200 Kultaa</span>
+                            <span id="shop-move-cost" class="font-bold text-amber-400 font-mono">60 Kultaa</span>
                             <button id="btn-buy-move" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
@@ -247,17 +254,17 @@
                         <div>
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-bold text-amber-400 text-lg">Kriittinen Osuma</h3>
-                                <span id="shop-crit-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 0</span>
+                                <span id="shop-crit-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 0 / 50</span>
                             </div>
                             <p class="text-xs text-slate-400 mb-4">Kasvattaa mahdollisuutta tehdä tuplavahinkoa iskuillasi.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span id="shop-crit-cost" class="font-bold text-amber-400 font-mono">250 Kultaa</span>
+                            <span id="shop-crit-cost" class="font-bold text-amber-400 font-mono">75 Kultaa</span>
                             <button id="btn-buy-crit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
                         </div>
                     </div>
 
-                    <!-- Elämän Parannus (Potio) -->
+                    <!-- Elämän Parannus (Potion) -->
                     <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-start mb-2">
@@ -267,7 +274,7 @@
                             <p class="text-xs text-slate-400 mb-4">Palauttaa välittömästi 50% Maksimi HP:sta.</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-slate-800 pt-3">
-                            <span class="font-bold text-amber-400 font-mono">50 Kultaa</span>
+                            <span class="font-bold text-amber-400 font-mono">25 Kultaa</span>
                             <button id="btn-buy-heal" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-1.5 rounded-lg text-sm transition">Osta HP</button>
                         </div>
                     </div>
@@ -306,12 +313,17 @@
             mouse.y = (e.clientY - rect.top) * scaleY;
         });
 
-        canvas.addEventListener('mousedown', e => {
+        window.addEventListener('mousedown', e => {
             if (e.button === 0) mouse.down = true;
         });
 
-        canvas.addEventListener('mouseup', e => {
+        window.addEventListener('mouseup', e => {
             if (e.button === 0) mouse.down = false;
+        });
+
+        // Lisätään varmistus, jos hiiri päästetään irti ikkunan ulkopuolella
+        window.addEventListener('mouseleave', () => {
+            mouse.down = false;
         });
 
         // Pelaajan data ja statssit
@@ -325,7 +337,7 @@
             stage: 1,           // Tasoalue / Maailman taso (1-99)
             hp: 100,
             maxHp: 100,
-            gold: 50,
+            gold: 0,            // Normaaliversio: 0 kultaa alussa
             
             // Varusteet & Aseet
             activeWeapon: 'sword', // 'sword' tai 'gun'
@@ -341,7 +353,7 @@
             baseSpeed: 4,
             critChance: 0.05,
             
-            // Päivitysten tasot
+            // Päivitysten tasot (Max 50 kaikille)
             upgrades: {
                 damage: 1,
                 gunDamage: 1,
@@ -423,6 +435,21 @@
         document.getElementById('btn-buy-crit').addEventListener('click', () => buyUpgrade('crit'));
         document.getElementById('btn-buy-heal').addEventListener('click', buyHeal);
 
+        // Cheat-koodin tarkistus
+        document.getElementById('btn-apply-cheat').addEventListener('click', applyCheatCode);
+
+        function applyCheatCode() {
+            const input = document.getElementById('cheat-code-input').value.trim();
+            if (input === 'https://oskarcatnap.github.io/HeguBB/') {
+                player.gold = 99999999;
+                updateUI();
+                createFloatingText(player.x, player.y - 30, "LOPUTON KULTA AKTIVOITU!", "#eab308", 24);
+                document.getElementById('cheat-code-input').value = '';
+            } else {
+                createFloatingText(player.x, player.y - 30, "VÄÄRÄ KOODI!", "#ef4444", 20);
+            }
+        }
+
         function toggleShop() {
             isShopOpen = !isShopOpen;
             if (isShopOpen) {
@@ -454,7 +481,8 @@
             while (player.xp >= player.xpToNextLevel && player.level < 99) {
                 player.xp -= player.xpToNextLevel;
                 player.level++;
-                player.xpToNextLevel = Math.floor(100 * Math.pow(1.15, player.level - 1));
+                // Hitaampi levelöinti: kasvatetaan XP-vaatimusta jyrkemmin (1.35x)
+                player.xpToNextLevel = Math.floor(150 * Math.pow(1.35, player.level - 1));
                 
                 // Bonukset tason noususta
                 player.maxHp += 15;
@@ -469,7 +497,7 @@
 
         function killPlayer() {
             gameOver = true;
-            player.gold = Math.floor(player.gold * 0.7); // Menettää 30% kullasta
+            player.gold = Math.floor(player.gold * 0.8); // Menettää 20% kullasta kuollessa
             gameOverModal.classList.remove('hidden');
         }
 
@@ -482,12 +510,20 @@
             startStage(player.stage);
         }
 
-        function buyHeal() {
-            if (player.gold >= 50 && player.hp < player.maxHp) {
-                player.gold -= 50;
-                player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.5));
-                updateUI();
-                createFloatingText(player.x, player.y - 30, "+HP!", "#22c55e");
+        // Kaupan ostoslaskennat (Korkeammat hinnat ja jyrkempi kasvu)
+        function getUpgradeCost(type) {
+            const lvl = player.upgrades[type];
+            if (lvl >= 50) return "MAX";
+
+            switch(type) {
+                case 'damage': return Math.floor(50 * Math.pow(1.3, lvl - 1));
+                case 'gunDamage': return Math.floor(65 * Math.pow(1.3, lvl - 1));
+                case 'gunSpeed': return Math.floor(75 * Math.pow(1.35, lvl - 1));
+                case 'speed': return Math.floor(75 * Math.pow(1.35, lvl - 1));
+                case 'hp': return Math.floor(60 * Math.pow(1.3, lvl - 1));
+                case 'move': return Math.floor(100 * Math.pow(1.4, lvl - 1));
+                case 'crit': return Math.floor(120 * Math.pow(1.4, lvl));
+                default: return 100;
             }
         }
 
@@ -526,66 +562,61 @@
             });
         }
 
-        // Kaupan ostoslaskennat
-        function getUpgradeCost(type) {
-            const lvl = player.upgrades[type];
-            switch(type) {
-                case 'damage': return Math.floor(80 * Math.pow(1.3, lvl - 1));
-                case 'gunDamage': return Math.floor(90 * Math.pow(1.3, lvl - 1));
-                case 'gunSpeed': return Math.floor(110 * Math.pow(1.35, lvl - 1));
-                case 'speed': return Math.floor(120 * Math.pow(1.35, lvl - 1));
-                case 'hp': return Math.floor(90 * Math.pow(1.25, lvl - 1));
-                case 'move': return Math.floor(150 * Math.pow(1.4, lvl - 1));
-                case 'crit': return Math.floor(200 * Math.pow(1.5, lvl));
-                default: return 100;
+        function updateShopUI() {
+            document.getElementById('shop-dmg-lvl').innerText = `Taso ${player.upgrades.damage} / 50`;
+            document.getElementById('shop-dmg-cost').innerText = typeof getUpgradeCost('damage') === 'number' ? `${getUpgradeCost('damage')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-gun-dmg-lvl').innerText = `Taso ${player.upgrades.gunDamage} / 50`;
+            document.getElementById('shop-gun-dmg-cost').innerText = typeof getUpgradeCost('gunDamage') === 'number' ? `${getUpgradeCost('gunDamage')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-gun-speed-lvl').innerText = `Taso ${player.upgrades.gunSpeed} / 50`;
+            document.getElementById('shop-gun-speed-cost').innerText = typeof getUpgradeCost('gunSpeed') === 'number' ? `${getUpgradeCost('gunSpeed')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-speed-lvl').innerText = `Taso ${player.upgrades.speed} / 50`;
+            document.getElementById('shop-speed-cost').innerText = typeof getUpgradeCost('speed') === 'number' ? `${getUpgradeCost('speed')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-hp-lvl').innerText = `Taso ${player.upgrades.hp} / 50`;
+            document.getElementById('shop-hp-cost').innerText = typeof getUpgradeCost('hp') === 'number' ? `${getUpgradeCost('hp')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-move-lvl').innerText = `Taso ${player.upgrades.move} / 50`;
+            document.getElementById('shop-move-cost').innerText = typeof getUpgradeCost('move') === 'number' ? `${getUpgradeCost('move')} Kultaa` : 'MAX';
+
+            document.getElementById('shop-crit-lvl').innerText = `Taso ${player.upgrades.crit} / 50`;
+            document.getElementById('shop-crit-cost').innerText = typeof getUpgradeCost('crit') === 'number' ? `${getUpgradeCost('crit')} Kultaa` : 'MAX';
+        }
+
+        function buyHeal() {
+            const cost = 25;
+            if (player.gold >= cost && player.hp < player.maxHp) {
+                player.gold -= cost;
+                player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.5));
+                updateUI();
+                createFloatingText(player.x, player.y - 30, "+50% HP!", "#22c55e");
             }
         }
 
-        function updateShopUI() {
-            document.getElementById('shop-dmg-lvl').innerText = `Taso ${player.upgrades.damage}`;
-            document.getElementById('shop-dmg-cost').innerText = `${getUpgradeCost('damage')} Kultaa`;
-
-            document.getElementById('shop-gun-dmg-lvl').innerText = `Taso ${player.upgrades.gunDamage}`;
-            document.getElementById('shop-gun-dmg-cost').innerText = `${getUpgradeCost('gunDamage')} Kultaa`;
-
-            document.getElementById('shop-gun-speed-lvl').innerText = `Taso ${player.upgrades.gunSpeed}`;
-            document.getElementById('shop-gun-speed-cost').innerText = `${getUpgradeCost('gunSpeed')} Kultaa`;
-
-            document.getElementById('shop-speed-lvl').innerText = `Taso ${player.upgrades.speed}`;
-            document.getElementById('shop-speed-cost').innerText = `${getUpgradeCost('speed')} Kultaa`;
-
-            document.getElementById('shop-hp-lvl').innerText = `Taso ${player.upgrades.hp}`;
-            document.getElementById('shop-hp-cost').innerText = `${getUpgradeCost('hp')} Kultaa`;
-
-            document.getElementById('shop-move-lvl').innerText = `Taso ${player.upgrades.move}`;
-            document.getElementById('shop-move-cost').innerText = `${getUpgradeCost('move')} Kultaa`;
-
-            document.getElementById('shop-crit-lvl').innerText = `Taso ${player.upgrades.crit}`;
-            document.getElementById('shop-crit-cost').innerText = `${getUpgradeCost('crit')} Kultaa`;
-        }
-
         function buyUpgrade(type) {
+            if (player.upgrades[type] >= 50) return;
+
             const cost = getUpgradeCost(type);
             if (player.gold >= cost) {
                 player.gold -= cost;
                 player.upgrades[type]++;
 
-                if (type === 'damage') player.swordDamage += 12;
-                if (type === 'gunDamage') player.gunDamage += 9;
-                if (type === 'gunSpeed') player.gunCooldown = Math.max(80, player.gunCooldown - 20);
-                if (type === 'speed') player.swordCooldown = Math.max(120, player.swordCooldown - 30);
+                if (type === 'damage') player.swordDamage += 10;
+                if (type === 'gunDamage') player.gunDamage += 8;
+                if (type === 'gunSpeed') player.gunCooldown = Math.max(60, player.gunCooldown - 4);
+                if (type === 'speed') player.swordCooldown = Math.max(100, player.swordCooldown - 6);
                 if (type === 'hp') {
-                    player.maxHp += 35;
-                    player.hp += 35;
+                    player.maxHp += 25;
+                    player.hp += 25;
                 }
-                if (type === 'move') player.baseSpeed += 0.5;
-                if (type === 'crit') player.critChance += 0.05;
+                if (type === 'move') player.baseSpeed += 0.25;
+                if (type === 'crit') player.critChance += 0.015;
 
                 updateUI();
                 updateShopUI();
                 createFloatingText(player.x, player.y - 30, "PÄIVITETTY!", "#3b82f6");
-            } else {
-                createFloatingText(player.x, player.y - 30, "Ei tarpeeksi kultaa!", "#ef4444");
             }
         }
 
@@ -629,8 +660,8 @@
                 damage: Math.floor(18 * levelMultiplier),
                 speed: 1.5 + (player.stage * 0.02),
                 color: '#dc2626',
-                xpReward: Math.floor(250 * levelMultiplier),
-                goldReward: Math.floor(200 * levelMultiplier),
+                xpReward: Math.floor(120 * levelMultiplier), // Pienennetty XP
+                goldReward: Math.floor(150 * levelMultiplier),
                 isBoss: true,
                 lastShootTime: 0,
                 shootCooldown: Math.max(600, 1500 - (player.stage * 10))
@@ -659,8 +690,8 @@
                 damage: Math.floor(8 * levelMultiplier),
                 speed: 2.2 + Math.random() * 0.8,
                 color: Math.random() < 0.3 ? '#9333ea' : '#16a34a',
-                xpReward: Math.floor(25 * levelMultiplier),
-                goldReward: Math.floor(15 * levelMultiplier),
+                xpReward: Math.floor(12 * levelMultiplier), // Pienennetty XP per vihollinen
+                goldReward: Math.floor(10 * levelMultiplier),
                 isBoss: false
             };
 
