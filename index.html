@@ -1,1 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sankaritarina 1-99</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        
+        canvas {
+            cursor: crosshair;
+            background: #111827;
+        }
 
+        /* Custom Scrollbar for Shop */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(234, 179, 8, 0.5);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(234, 179, 8, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 overflow-x-hidden">
+
+    <!-- Pelin Pääsäiliö -->
+    <div class="relative w-full max-w-5xl bg-slate-900 border-2 border-amber-600/40 rounded-xl shadow-2xl overflow-hidden flex flex-col">
+        
+        <!-- Yläpalkki / Stats bar -->
+        <header class="bg-slate-950/90 border-b border-amber-600/30 p-3 flex flex-wrap items-center justify-between gap-2 z-10">
+            <!-- Pelaajan Taso & Nimi -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-500 flex items-center justify-center font-cinzel font-bold text-amber-400 text-xl shadow-lg shadow-amber-500/20" id="ui-level">
+                        1
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 bg-amber-500 text-black text-[10px] font-extrabold px-1 rounded-full uppercase">Lvl</span>
+                </div>
+                <div>
+                    <h1 class="font-cinzel font-bold text-lg text-amber-400 leading-tight">Sankari</h1>
+                    <div class="text-xs text-slate-400">Tasoalue <span id="ui-stage" class="text-amber-300 font-bold">1</span> / 99</div>
+                </div>
+            </div>
+
+            <!-- Elämä (HP) ja XP Palkit -->
+            <div class="flex-1 min-w-[200px] max-w-md mx-2 flex flex-col gap-1.5">
+                <!-- HP Palkki -->
+                <div class="w-full bg-slate-950 rounded-full h-4 border border-red-900/60 p-0.5 relative overflow-hidden shadow-inner">
+                    <div id="ui-hp-bar" class="bg-gradient-to-r from-red-700 to-red-500 h-full rounded-full transition-all duration-150" style="width: 100%;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" id="ui-hp-text">
+                        100 / 100 HP
+                    </div>
+                </div>
+                <!-- XP Palkki -->
+                <div class="w-full bg-slate-950 rounded-full h-3 border border-purple-900/60 p-0.5 relative overflow-hidden shadow-inner">
+                    <div id="ui-xp-bar" class="bg-gradient-to-r from-purple-600 to-indigo-400 h-full rounded-full transition-all duration-150" style="width: 0%;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-purple-200 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]" id="ui-xp-text">
+                        XP: 0 / 100
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valuutat ja Kauppanappi -->
+            <div class="flex items-center gap-4">
+                <!-- Aseenvaihto painikkeet/näytin -->
+                <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-700">
+                    <button id="btn-weapon-sword" class="px-2.5 py-1 rounded text-xs font-bold transition bg-amber-500 text-slate-950">1: Miekka</button>
+                    <button id="btn-weapon-gun" class="px-2.5 py-1 rounded text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white">2: Pyssy</button>
+                </div>
+
+                <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-amber-500/30">
+                    <svg class="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="8" fill="currentColor" opacity="0.2"/>
+                        <path fill="currentColor" d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-1h2a1 1 0 000-2H9V9h3a1 1 0 100-2H9V6a1 1 0 10-2 0v1H6a1 1 0 100 2h2v2H5a1 1 0 100 2h2v1a1 1 0 102 0v-1h2a1 1 0 100-2z"/>
+                    </svg>
+                    <span id="ui-gold" class="font-bold text-amber-400 text-lg font-mono">0</span>
+                </div>
+
+                <button id="btn-toggle-shop" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg shadow-lg hover:shadow-amber-500/20 transition duration-150 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Kauppa</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Boss Health Bar Bar (Näkyy vain Boss-tasolla) -->
+        <div id="ui-boss-bar-container" class="hidden absolute top-16 left-1/2 -translate-x-1/2 w-full max-w-md z-20 px-4">
+            <div class="bg-slate-950/90 border border-red-600 p-2 rounded-xl backdrop-blur flex flex-col gap-1 shadow-2xl">
+                <div class="flex justify-between text-xs font-bold text-red-400 px-1">
+                    <span id="ui-boss-name">TASOALUEEN POMO</span>
+                    <span id="ui-boss-hp-text">1000 / 1000</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-3 border border-red-950 overflow-hidden">
+                    <div id="ui-boss-hp-bar" class="bg-gradient-to-r from-red-700 via-red-500 to-amber-500 h-full w-full transition-all duration-150"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pelitila (Canvas & Overlayt) -->
+        <div class="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center">
+            <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+            <!-- Ohjeet - overlay alussa -->
+            <div id="controls-hint" class="absolute bottom-4 left-4 bg-slate-950/80 border border-slate-700/50 p-3 rounded-lg text-xs text-slate-300 pointer-events-none backdrop-blur-sm flex flex-col gap-1">
+                <div><span class="font-bold text-amber-400">WASD</span> - Liikkuminen</div>
+                <div><span class="font-bold text-amber-400">1 / 2 tai Space / Q</span> - Vaihda ainetta (Miekka / Pyssy)</div>
+                <div><span class="font-bold text-amber-400">Hiiren Left Click</span> - Hyökkää / Ammu</div>
+                <div><span class="font-bold text-amber-400">Joka 5. leveli:</span> BOSS-taistelu!</div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="game-over-modal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center z-20 text-center p-6">
+                <h2 class="font-cinzel text-5xl font-bold text-red-500 mb-2 drop-shadow-lg">KUOLIT!</h2>
+                <p class="text-slate-300 mb-6 max-w-md">Menetit osan kullastasi, mutta sankaritasosi ja varusteesi säilyvät. Nouse uudelleen taisteluun!</p>
+                <button id="btn-respawn" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-8 py-3 rounded-xl shadow-xl transition transform hover:scale-105">
+                    Synty Uudelleen
+                </button>
+            </div>
+
+            <!-- Kauppa Modal Overlay -->
+            <div id="shop-modal" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col z-30 p-4 sm:p-6">
+                <div class="flex justify-between items-center border-b border-amber-500/30 pb-4 mb-4">
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-amber-400">Varustekauppa & Päivitykset</h2>
+                        <p class="text-xs text-slate-400">Päivitä sankarisi voimia kohdataksesi vahvempia hirviöitä.</p>
+                    </div>
+                    <button id="btn-close-shop" class="text-slate-400 hover:text-white text-2xl font-bold px-3 py-1 rounded-lg hover:bg-slate-800">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Päivityskortit -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-1 flex-1">
+                    <!-- Ase Vahinko (Miekka) -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Miekan Vahinko</h3>
+                                <span id="shop-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Kasvattaa miekan lähitaisteluvahinkoa.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-dmg-cost" class="font-bold text-amber-400 font-mono">80 Kultaa</span>
+                            <button id="btn-buy-dmg" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Pyssyn Vahinko -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Pyssyn Vahinko</h3>
+                                <span id="shop-gun-dmg-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Kasvattaa ammusten vahinkoa etäisyydelle.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-gun-dmg-cost" class="font-bold text-amber-400 font-mono">100 Kultaa</span>
+                            <button id="btn-buy-gun-dmg" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Pyssyn Tulinopeus -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Pyssyn Tulinopeus</h3>
+                                <span id="shop-gun-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Nopeuttaa luotien ampumista peräkkäin.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-gun-speed-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <button id="btn-buy-gun-speed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Hyökkäysnopeus (Miekka) -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Miekan Nopeus</h3>
+                                <span id="shop-speed-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Lyhennä miekan sivallusten välistä aikaa.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-speed-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <button id="btn-buy-speed" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Max HP & Panssari -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Haarniska & HP</h3>
+                                <span id="shop-hp-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Nostaa maksimielämäpisteitäsi (Max HP) ja parantaa hahmosi kestävyyttä.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-hp-cost" class="font-bold text-amber-400 font-mono">120 Kultaa</span>
+                            <button id="btn-buy-hp" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Liikenopeus -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Liikenopeus</h3>
+                                <span id="shop-move-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 1</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Nostaa liikkumisnopeutta auttaen väistelemään hirviöitä.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-move-cost" class="font-bold text-amber-400 font-mono">200 Kultaa</span>
+                            <button id="btn-buy-move" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Kriittinen Osuma -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-amber-400 text-lg">Kriittinen Osuma</h3>
+                                <span id="shop-crit-lvl" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full">Taso 0</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Kasvattaa mahdollisuutta tehdä tuplavahinkoa iskuillasi.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span id="shop-crit-cost" class="font-bold text-amber-400 font-mono">250 Kultaa</span>
+                            <button id="btn-buy-crit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-sm transition">Päivitä</button>
+                        </div>
+                    </div>
+
+                    <!-- Elämän Parannus (Potio) -->
+                    <div class="bg-slate-900 border border-slate-700/60 hover:border-amber-500/50 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-red-400 text-lg">Terveysjuoma</h3>
+                                <span class="bg-red-500/20 text-red-300 text-xs font-bold px-2.5 py-1 rounded-full">Kertakäyttö</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">Palauttaa välittömästi 50% Maksimi HP:sta.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span class="font-bold text-amber-400 font-mono">50 Kultaa</span>
+                            <button id="btn-buy-heal" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-1.5 rounded-lg text-sm transition">Osta HP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pelin Logiikka Script -->
+    <script>
+        // Pelin asetukset ja tila
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resoluution säätö (16:9 suhteella)
+        const GAME_WIDTH = 1280;
+        const GAME_HEIGHT = 720;
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+
+        // Syötteet
+        const keys = {};
+        const mouse = { x: 0, y: 0, down: false };
+
+        // Pelitilan muuttujat
+        let isShopOpen = false;
+        let gameOver = false;
+        let lastTime = 0;
+
+        // Hiiren koordinaatit Canvas-skaalauksen mukaan
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            mouse.x = (e.clientX - rect.left) * scaleX;
+            mouse.y = (e.clientY - rect.top) * scaleY;
+        });
+
+        canvas.addEventListener('mousedown', e => {
+            if (e.button === 0) mouse.down = true;
+        });
+
+        canvas.addEventListener('mouseup', e => {
+            if (e.button === 0) mouse.down = false;
+        });
+
+        // Pelaajan data ja statssit
+        const player = {
+            x: GAME_WIDTH / 2,
+            y: GAME_HEIGHT / 2,
+            radius: 20,
+            level: 1,           // Henkilökohtainen taso (1-99)
+            xp: 0,
+            xpToNextLevel: 100,
+            stage: 1,           // Tasoalue / Maailman taso (1-99)
+            hp: 100,
+            maxHp: 100,
+            gold: 50,
+            
+            // Varusteet & Aseet
+            activeWeapon: 'sword', // 'sword' tai 'gun'
+            swordDamage: 25,
+            swordCooldown: 400,
+            lastSwordAttack: 0,
+
+            gunDamage: 18,
+            gunCooldown: 250,
+            lastGunAttack: 0,
+            bulletSpeed: 11,
+
+            baseSpeed: 4,
+            critChance: 0.05,
+            
+            // Päivitysten tasot
+            upgrades: {
+                damage: 1,
+                gunDamage: 1,
+                gunSpeed: 1,
+                speed: 1,
+                hp: 1,
+                move: 1,
+                crit: 0
+            }
+        };
+
+        // Objektilistat
+        let enemies = [];
+        let bullets = [];       // Pelaajan luodit
+        let enemyBullets = [];  // Bossin luodit
+        let particles = [];
+        let floatingTexts = [];
+        let portal = null;
+        let activeBoss = null;
+
+        // Seurataan näppäimiä ja aseen vaihtoa
+        window.addEventListener('keydown', e => {
+            const key = e.key.toLowerCase();
+            keys[key] = true;
+
+            if (key === '1') setWeapon('sword');
+            if (key === '2') setWeapon('gun');
+            if (key === 'q' || e.code === 'Space') {
+                setWeapon(player.activeWeapon === 'sword' ? 'gun' : 'sword');
+            }
+        });
+
+        window.addEventListener('keyup', e => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        function setWeapon(type) {
+            player.activeWeapon = type;
+            const btnSword = document.getElementById('btn-weapon-sword');
+            const btnGun = document.getElementById('btn-weapon-gun');
+
+            if (type === 'sword') {
+                btnSword.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-amber-500 text-slate-950";
+                btnGun.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white";
+            } else {
+                btnGun.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-amber-500 text-slate-950";
+                btnSword.className = "px-2.5 py-1 rounded text-xs font-bold transition bg-slate-800 text-slate-400 hover:text-white";
+            }
+        }
+
+        document.getElementById('btn-weapon-sword').addEventListener('click', () => setWeapon('sword'));
+        document.getElementById('btn-weapon-gun').addEventListener('click', () => setWeapon('gun'));
+
+        // UI Elementit
+        const uiLevel = document.getElementById('ui-level');
+        const uiStage = document.getElementById('ui-stage');
+        const uiHpBar = document.getElementById('ui-hp-bar');
+        const uiHpText = document.getElementById('ui-hp-text');
+        const uiXpBar = document.getElementById('ui-xp-bar');
+        const uiXpText = document.getElementById('ui-xp-text');
+        const uiGold = document.getElementById('ui-gold');
+        const uiBossContainer = document.getElementById('ui-boss-bar-container');
+        const uiBossHpBar = document.getElementById('ui-boss-hp-bar');
+        const uiBossHpText = document.getElementById('ui-boss-hp-text');
+        const shopModal = document.getElementById('shop-modal');
+        const gameOverModal = document.getElementById('game-over-modal');
+
+        // Nappien kuuntelijat kaupalle
+        document.getElementById('btn-toggle-shop').addEventListener('click', toggleShop);
+        document.getElementById('btn-close-shop').addEventListener('click', toggleShop);
+        document.getElementById('btn-respawn').addEventListener('click', respawnPlayer);
+
+        document.getElementById('btn-buy-dmg').addEventListener('click', () => buyUpgrade('damage'));
+        document.getElementById('btn-buy-gun-dmg').addEventListener('click', () => buyUpgrade('gunDamage'));
+        document.getElementById('btn-buy-gun-speed').addEventListener('click', () => buyUpgrade('gunSpeed'));
+        document.getElementById('btn-buy-speed').addEventListener('click', () => buyUpgrade('speed'));
+        document.getElementById('btn-buy-hp').addEventListener('click', () => buyUpgrade('hp'));
+        document.getElementById('btn-buy-move').addEventListener('click', () => buyUpgrade('move'));
+        document.getElementById('btn-buy-crit').addEventListener('click', () => buyUpgrade('crit'));
+        document.getElementById('btn-buy-heal').addEventListener('click', buyHeal);
+
+        function toggleShop() {
+            isShopOpen = !isShopOpen;
+            if (isShopOpen) {
+                updateShopUI();
+                shopModal.classList.remove('hidden');
+            } else {
+                shopModal.classList.add('hidden');
+            }
+        }
+
+        function updateUI() {
+            uiLevel.innerText = player.level;
+            uiStage.innerText = player.stage;
+
+            const hpPct = Math.max(0, (player.hp / player.maxHp) * 100);
+            uiHpBar.style.width = `${hpPct}%`;
+            uiHpText.innerText = `${Math.max(0, Math.ceil(player.hp))} / ${player.maxHp} HP`;
+
+            const xpPct = (player.xp / player.xpToNextLevel) * 100;
+            uiXpBar.style.width = `${xpPct}%`;
+            uiXpText.innerText = `XP: ${player.xp} / ${player.xpToNextLevel}`;
+
+            uiGold.innerText = player.gold;
+        }
+
+        function addXP(amount) {
+            if (player.level >= 99) return;
+            player.xp += amount;
+            while (player.xp >= player.xpToNextLevel && player.level < 99) {
+                player.xp -= player.xpToNextLevel;
+                player.level++;
+                player.xpToNextLevel = Math.floor(100 * Math.pow(1.15, player.level - 1));
+                
+                // Bonukset tason noususta
+                player.maxHp += 15;
+                player.hp = player.maxHp;
+                player.swordDamage += 3;
+                player.gunDamage += 2;
+
+                createFloatingText(player.x, player.y - 40, "LEVEL UP! (1-99)", "#eab308", 26);
+            }
+            updateUI();
+        }
+
+        function killPlayer() {
+            gameOver = true;
+            player.gold = Math.floor(player.gold * 0.7); // Menettää 30% kullasta
+            gameOverModal.classList.remove('hidden');
+        }
+
+        function respawnPlayer() {
+            gameOver = false;
+            player.hp = player.maxHp;
+            player.x = GAME_WIDTH / 2;
+            player.y = GAME_HEIGHT / 2;
+            gameOverModal.classList.add('hidden');
+            startStage(player.stage);
+        }
+
+        function buyHeal() {
+            if (player.gold >= 50 && player.hp < player.maxHp) {
+                player.gold -= 50;
+                player.hp = Math.min(player.maxHp, player.hp + Math.floor(player.maxHp * 0.5));
+                updateUI();
+                createFloatingText(player.x, player.y - 30, "+HP!", "#22c55e");
+            }
+        }
+
+        function createFloatingText(x, y, text, color = '#ffffff', fontSize = 16) {
+            floatingTexts.push({
+                x, y, text, color, fontSize,
+                vy: -0.8,
+                life: 0,
+                maxLife: 45
+            });
+        }
+
+        function createBloodParticles(x, y, color) {
+            for (let i = 0; i < 6; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 3;
+                particles.push({
+                    type: 'particle',
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: 2 + Math.random() * 2,
+                    color: color,
+                    life: 0,
+                    maxLife: 20
+                });
+            }
+        }
+
+        function createSlashEffect(x, y, angle, range) {
+            particles.push({
+                type: 'slash',
+                x, y, angle, range,
+                life: 0,
+                maxLife: 8
+            });
+        }
+
+        // Kaupan ostoslaskennat
+        function getUpgradeCost(type) {
+            const lvl = player.upgrades[type];
+            switch(type) {
+                case 'damage': return Math.floor(80 * Math.pow(1.3, lvl - 1));
+                case 'gunDamage': return Math.floor(90 * Math.pow(1.3, lvl - 1));
+                case 'gunSpeed': return Math.floor(110 * Math.pow(1.35, lvl - 1));
+                case 'speed': return Math.floor(120 * Math.pow(1.35, lvl - 1));
+                case 'hp': return Math.floor(90 * Math.pow(1.25, lvl - 1));
+                case 'move': return Math.floor(150 * Math.pow(1.4, lvl - 1));
+                case 'crit': return Math.floor(200 * Math.pow(1.5, lvl));
+                default: return 100;
+            }
+        }
+
+        function updateShopUI() {
+            document.getElementById('shop-dmg-lvl').innerText = `Taso ${player.upgrades.damage}`;
+            document.getElementById('shop-dmg-cost').innerText = `${getUpgradeCost('damage')} Kultaa`;
+
+            document.getElementById('shop-gun-dmg-lvl').innerText = `Taso ${player.upgrades.gunDamage}`;
+            document.getElementById('shop-gun-dmg-cost').innerText = `${getUpgradeCost('gunDamage')} Kultaa`;
+
+            document.getElementById('shop-gun-speed-lvl').innerText = `Taso ${player.upgrades.gunSpeed}`;
+            document.getElementById('shop-gun-speed-cost').innerText = `${getUpgradeCost('gunSpeed')} Kultaa`;
+
+            document.getElementById('shop-speed-lvl').innerText = `Taso ${player.upgrades.speed}`;
+            document.getElementById('shop-speed-cost').innerText = `${getUpgradeCost('speed')} Kultaa`;
+
+            document.getElementById('shop-hp-lvl').innerText = `Taso ${player.upgrades.hp}`;
+            document.getElementById('shop-hp-cost').innerText = `${getUpgradeCost('hp')} Kultaa`;
+
+            document.getElementById('shop-move-lvl').innerText = `Taso ${player.upgrades.move}`;
+            document.getElementById('shop-move-cost').innerText = `${getUpgradeCost('move')} Kultaa`;
+
+            document.getElementById('shop-crit-lvl').innerText = `Taso ${player.upgrades.crit}`;
+            document.getElementById('shop-crit-cost').innerText = `${getUpgradeCost('crit')} Kultaa`;
+        }
+
+        function buyUpgrade(type) {
+            const cost = getUpgradeCost(type);
+            if (player.gold >= cost) {
+                player.gold -= cost;
+                player.upgrades[type]++;
+
+                if (type === 'damage') player.swordDamage += 12;
+                if (type === 'gunDamage') player.gunDamage += 9;
+                if (type === 'gunSpeed') player.gunCooldown = Math.max(80, player.gunCooldown - 20);
+                if (type === 'speed') player.swordCooldown = Math.max(120, player.swordCooldown - 30);
+                if (type === 'hp') {
+                    player.maxHp += 35;
+                    player.hp += 35;
+                }
+                if (type === 'move') player.baseSpeed += 0.5;
+                if (type === 'crit') player.critChance += 0.05;
+
+                updateUI();
+                updateShopUI();
+                createFloatingText(player.x, player.y - 30, "PÄIVITETTY!", "#3b82f6");
+            } else {
+                createFloatingText(player.x, player.y - 30, "Ei tarpeeksi kultaa!", "#ef4444");
+            }
+        }
+
+        // Tasoalueen aloitus (Stage 1 - 99, jossa joka 5. on BOSS)
+        function startStage(stageNum) {
+            player.stage = Math.min(99, stageNum);
+            enemies = [];
+            bullets = [];
+            enemyBullets = [];
+            portal = null;
+            activeBoss = null;
+
+            const isBossStage = (player.stage % 5 === 0);
+
+            if (isBossStage) {
+                uiBossContainer.classList.remove('hidden');
+                spawnBoss();
+                createFloatingText(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, `BOSS LEVEL ${player.stage}!`, "#ef4444", 36);
+            } else {
+                uiBossContainer.classList.add('hidden');
+                const enemyCount = 5 + Math.floor(player.stage * 1.5);
+                for (let i = 0; i < enemyCount; i++) {
+                    spawnEnemy();
+                }
+                createFloatingText(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, `TASOALUE ${player.stage}`, "#f59e0b", 30);
+            }
+            
+            updateUI();
+        }
+
+        function spawnBoss() {
+            const levelMultiplier = 1 + (player.stage * 0.25);
+            const bossHp = Math.floor(450 * levelMultiplier);
+            
+            activeBoss = {
+                x: GAME_WIDTH / 2,
+                y: 120,
+                radius: 45,
+                hp: bossHp,
+                maxHp: bossHp,
+                damage: Math.floor(18 * levelMultiplier),
+                speed: 1.5 + (player.stage * 0.02),
+                color: '#dc2626',
+                xpReward: Math.floor(250 * levelMultiplier),
+                goldReward: Math.floor(200 * levelMultiplier),
+                isBoss: true,
+                lastShootTime: 0,
+                shootCooldown: Math.max(600, 1500 - (player.stage * 10))
+            };
+
+            enemies.push(activeBoss);
+        }
+
+        function spawnEnemy() {
+            let x, y;
+            if (Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? 40 : GAME_WIDTH - 40;
+                y = Math.random() * (GAME_HEIGHT - 80) + 40;
+            } else {
+                x = Math.random() * (GAME_WIDTH - 80) + 40;
+                y = Math.random() < 0.5 ? 40 : GAME_HEIGHT - 40;
+            }
+
+            const levelMultiplier = 1 + (player.stage * 0.18);
+            let enemy = {
+                x: x,
+                y: y,
+                radius: 15 + Math.random() * 8,
+                hp: Math.floor(40 * levelMultiplier),
+                maxHp: Math.floor(40 * levelMultiplier),
+                damage: Math.floor(8 * levelMultiplier),
+                speed: 2.2 + Math.random() * 0.8,
+                color: Math.random() < 0.3 ? '#9333ea' : '#16a34a',
+                xpReward: Math.floor(25 * levelMultiplier),
+                goldReward: Math.floor(15 * levelMultiplier),
+                isBoss: false
+            };
+
+            enemies.push(enemy);
+        }
+
+        // Pelaajan Hyökkäys (Miekka tai Pyssy)
+        function playerAttack() {
+            const now = Date.now();
+            const dx = mouse.x - player.x;
+            const dy = mouse.y - player.y;
+            const angle = Math.atan2(dy, dx);
+
+            if (player.activeWeapon === 'sword') {
+                if (now - player.lastSwordAttack < player.swordCooldown) return;
+                player.lastSwordAttack = now;
+
+                const range = 90;
+                const arc = Math.PI / 2.2;
+                createSlashEffect(player.x, player.y, angle, range);
+
+                let isCrit = Math.random() < player.critChance;
+                let damage = player.swordDamage * (isCrit ? 2 : 1);
+
+                enemies.forEach(enemy => {
+                    const edx = enemy.x - player.x;
+                    const edy = enemy.y - player.y;
+                    const dist = Math.sqrt(edx * edx + edy * edy);
+
+                    if (dist <= range + enemy.radius) {
+                        let enemyAngle = Math.atan2(edy, edx);
+                        let angleDiff = enemyAngle - angle;
+
+                        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+
+                        if (Math.abs(angleDiff) <= arc / 2) {
+                            enemy.hp -= damage;
+                            enemy.x += Math.cos(angle) * (enemy.isBoss ? 4 : 15);
+                            enemy.y += Math.sin(angle) * (enemy.isBoss ? 4 : 15);
+
+                            createBloodParticles(enemy.x, enemy.y, enemy.color);
+                            createFloatingText(enemy.x, enemy.y - 15, isCrit ? `${damage}!` : `${damage}`, isCrit ? '#f59e0b' : '#ffffff', isCrit ? 22 : 16);
+                        }
+                    }
+                });
+            } else if (player.activeWeapon === 'gun') {
+                if (now - player.lastGunAttack < player.gunCooldown) return;
+                player.lastGunAttack = now;
+
+                let isCrit = Math.random() < player.critChance;
+                let damage = player.gunDamage * (isCrit ? 2 : 1);
+
+                // Luoti hiiren suuntaan
+                bullets.push({
+                    x: player.x + Math.cos(angle) * (player.radius + 5),
+                    y: player.y + Math.sin(angle) * (player.radius + 5),
+                    vx: Math.cos(angle) * player.bulletSpeed,
+                    vy: Math.sin(angle) * player.bulletSpeed,
+                    radius: 4,
+                    damage: damage,
+                    isCrit: isCrit,
+                    life: 0,
+                    maxLife: 90 // Pitkä matka
+                });
+            }
+        }
+
+        // PELIN PÄÄSILMUKKA (Update)
+        function update(dt) {
+            if (isShopOpen || gameOver) return;
+
+            // Liike WASD
+            let dx = 0, dy = 0;
+            if (keys['w']) dy -= 1;
+            if (keys['s']) dy += 1;
+            if (keys['a']) dx -= 1;
+            if (keys['d']) dx += 1;
+
+            if (dx !== 0 && dy !== 0) {
+                dx *= 0.7071;
+                dy *= 0.7071;
+            }
+
+            player.x += dx * player.baseSpeed;
+            player.y += dy * player.baseSpeed;
+            player.x = Math.max(player.radius, Math.min(GAME_WIDTH - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(GAME_HEIGHT - player.radius, player.y));
+
+            if (mouse.down) playerAttack();
+
+            // Pelaajan luodit
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                b.life++;
+
+                // Törmäys vihollisiin
+                let hit = false;
+                for (let j = 0; j < enemies.length; j++) {
+                    const enemy = enemies[j];
+                    const edx = enemy.x - b.x;
+                    const edy = enemy.y - b.y;
+                    if (Math.sqrt(edx * edx + edy * edy) < enemy.radius + b.radius) {
+                        enemy.hp -= b.damage;
+                        createBloodParticles(enemy.x, enemy.y, enemy.color);
+                        createFloatingText(enemy.x, enemy.y - 15, b.isCrit ? `${b.damage}!` : `${b.damage}`, b.isCrit ? '#f59e0b' : '#38bdf8', b.isCrit ? 22 : 16);
+                        hit = true;
+                        break;
+                    }
+                }
+
+                if (hit || b.life >= b.maxLife || b.x < 0 || b.x > GAME_WIDTH || b.y < 0 || b.y > GAME_HEIGHT) {
+                    bullets.splice(i, 1);
+                }
+            }
+
+            // Bossin Ammukset
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const eb = enemyBullets[i];
+                eb.x += eb.vx;
+                eb.y += eb.vy;
+
+                // Osuma pelaajaan
+                const pdx = player.x - eb.x;
+                const pdy = player.y - eb.y;
+                if (Math.sqrt(pdx * pdx + pdy * pdy) < player.radius + eb.radius) {
+                    player.hp -= eb.damage;
+                    updateUI();
+                    createFloatingText(player.x, player.y - 20, `-${eb.damage}`, '#ef4444');
+                    enemyBullets.splice(i, 1);
+                    if (player.hp <= 0) killPlayer();
+                    continue;
+                }
+
+                if (eb.x < 0 || eb.x > GAME_WIDTH || eb.y < 0 || eb.y > GAME_HEIGHT) {
+                    enemyBullets.splice(i, 1);
+                }
+            }
+
+            // Vihollisten päivitys & Boss Logiikka
+            const now = Date.now();
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                const edx = player.x - enemy.x;
+                const edy = player.y - enemy.y;
+                const dist = Math.sqrt(edx * edx + edy * edy);
+
+                if (dist > 0) {
+                    enemy.x += (edx / dist) * enemy.speed;
+                    enemy.y += (edy / dist) * enemy.speed;
+                }
+
+                // Bossin ampumishyökkäys
+                if (enemy.isBoss && now - enemy.lastShootTime > enemy.shootCooldown) {
+                    enemy.lastShootTime = now;
+                    const angle = Math.atan2(edy, edx);
+                    
+                    // Ammutaan 3 luodin viuhka
+                    for (let a = -0.3; a <= 0.3; a += 0.3) {
+                        enemyBullets.push({
+                            x: enemy.x,
+                            y: enemy.y,
+                            vx: Math.cos(angle + a) * 6,
+                            vy: Math.sin(angle + a) * 6,
+                            radius: 6,
+                            damage: Math.floor(enemy.damage * 0.8)
+                        });
+                    }
+                }
+
+                // Lähitörmäys pelaajaan
+                if (dist < player.radius + enemy.radius) {
+                    player.hp -= enemy.damage * 0.03;
+                    updateUI();
+                    if (player.hp <= 0) killPlayer();
+                }
+
+                // Kuolema
+                if (enemy.hp <= 0) {
+                    addXP(enemy.xpReward);
+                    player.gold += enemy.goldReward;
+                    
+                    if (enemy.isBoss) {
+                        activeBoss = null;
+                        uiBossContainer.classList.add('hidden');
+                        createFloatingText(enemy.x, enemy.y, "BOSS TUHOTTU!", "#22c55e", 28);
+                    } else {
+                        createFloatingText(enemy.x, enemy.y, `+${enemy.goldReward} Kultaa`, '#eab308');
+                    }
+
+                    enemies.splice(i, 1);
+                    updateUI();
+                }
+            }
+
+            // Boss HP-palkin päivitys
+            if (activeBoss) {
+                const bossPct = Math.max(0, (activeBoss.hp / activeBoss.maxHp) * 100);
+                uiBossHpBar.style.width = `${bossPct}%`;
+                uiBossHpText.innerText = `${Math.max(0, Math.ceil(activeBoss.hp))} / ${activeBoss.maxHp}`;
+            }
+
+            // Portaali seuraavalle tasolle
+            if (enemies.length === 0 && !portal && player.stage < 99) {
+                portal = { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, radius: 30 };
+                createFloatingText(portal.x, portal.y - 40, "PORTAALI AUKESI!", "#a855f7", 20);
+            }
+
+            if (portal) {
+                const pdx = player.x - portal.x;
+                const pdy = player.y - portal.y;
+                if (Math.sqrt(pdx * pdx + pdy * pdy) < player.radius + portal.radius) {
+                    startStage(player.stage + 1);
+                }
+            }
+
+            // Partikkelit & Tekstit
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.life++;
+                if (p.type === 'particle') { p.x += p.vx; p.y += p.vy; }
+                if (p.life >= p.maxLife) particles.splice(i, 1);
+            }
+
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                const ft = floatingTexts[i];
+                ft.y += ft.vy;
+                ft.life++;
+                if (ft.life >= ft.maxLife) floatingTexts.splice(i, 1);
+            }
+        }
+
+        // PELIN PIIRTO (Render)
+        function render() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            // Taustaruudukko
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < GAME_WIDTH; x += 64) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, GAME_HEIGHT); ctx.stroke();
+            }
+            for (let y = 0; y < GAME_HEIGHT; y += 64) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(GAME_WIDTH, y); ctx.stroke();
+            }
+
+            // Portaali
+            if (portal) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(portal.x, portal.y, portal.radius + Math.sin(Date.now() / 200) * 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#a855f7';
+                ctx.shadowColor = '#c084fc';
+                ctx.shadowBlur = 20;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Pelaajan luodit
+            bullets.forEach(b => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.shadowColor = '#0284c7';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Bossin luodit
+            enemyBullets.forEach(eb => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(eb.x, eb.y, eb.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#f43f5e';
+                ctx.shadowColor = '#e11d48';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Viholliset & Boss
+            enemies.forEach(enemy => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                ctx.fillStyle = enemy.color;
+                ctx.shadowColor = enemy.color;
+                ctx.shadowBlur = enemy.isBoss ? 25 : 5;
+                ctx.fill();
+                ctx.lineWidth = enemy.isBoss ? 4 : 2;
+                ctx.strokeStyle = enemy.isBoss ? '#fef08a' : '#000000';
+                ctx.stroke();
+
+                if (enemy.hp < enemy.maxHp && !enemy.isBoss) {
+                    const barW = enemy.radius * 2;
+                    const barX = enemy.x - enemy.radius;
+                    const barY = enemy.y - enemy.radius - 12;
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                    ctx.fillRect(barX, barY, barW, 5);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(barX, barY, barW * (enemy.hp / enemy.maxHp), 5);
+                }
+                ctx.restore();
+            });
+
+            // Pelaaja
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#3b82f6';
+            ctx.shadowColor = '#60a5fa';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#93c5fd';
+            ctx.stroke();
+
+            // Pelaajan Ase / Suunta
+            const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y);
+            
+            if (player.activeWeapon === 'sword') {
+                ctx.lineTo(player.x + Math.cos(angle) * (player.radius + 14), player.y + Math.sin(angle) * (player.radius + 14));
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 4;
+            } else {
+                ctx.lineTo(player.x + Math.cos(angle) * (player.radius + 18), player.y + Math.sin(angle) * (player.radius + 18));
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 5;
+            }
+            ctx.stroke();
+            ctx.restore();
+
+            // Partikkelit & Sivallukset
+            particles.forEach(p => {
+                ctx.save();
+                if (p.type === 'slash') {
+                    const alpha = 1 - (p.life / p.maxLife);
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.range, p.angle - Math.PI / 4, p.angle + Math.PI / 4);
+                    ctx.strokeStyle = `rgba(251, 191, 36, ${alpha})`;
+                    ctx.lineWidth = 8;
+                    ctx.stroke();
+                } else if (p.type === 'particle') {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = 1 - (p.life / p.maxLife);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            // Kelluvat Tekstit
+            floatingTexts.forEach(ft => {
+                ctx.save();
+                ctx.font = `bold ${ft.fontSize}px Inter, sans-serif`;
+                ctx.fillStyle = ft.color;
+                ctx.globalAlpha = 1 - (ft.life / ft.maxLife);
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 4;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.restore();
+            });
+        }
+
+        // Silmukan pyöritys
+        function gameLoop(timestamp) {
+            const dt = timestamp - lastTime;
+            lastTime = timestamp;
+
+            update(dt);
+            render();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Pelin käynnistys kun sivu latautuu
+        window.onload = () => {
+            startStage(1);
+            updateUI();
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>
